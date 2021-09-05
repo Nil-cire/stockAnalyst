@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
+import pymongo
 
 listed_stock_number_url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=2"
 unlisted_stock_number_url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=4"
@@ -37,6 +38,7 @@ def get_listed_stocks_info() -> dict:
 
             full_listed_list[number] = info_list
         except Exception as e:
+            print(d)
             print(e)
 
     return full_listed_list
@@ -62,9 +64,26 @@ def get_unlisted_stocks_info() -> dict:
 
             full_unlisted_list[number] = info_list
         except Exception as e:
+            print(d)
             print(e)
 
     return full_unlisted_list
+
+
+def get_listed_dict() -> dict:
+    my_client1 = pymongo.MongoClient("mongodb://localhost:27017/")
+    my_db1 = my_client1["stock_twse"]
+    my_col1 = my_db1["listed_stocks"]
+    data = my_col1.find_one({})
+    return data["stocks"]
+
+
+def get_unlisted_dict() -> dict:
+    my_client1 = pymongo.MongoClient("mongodb://localhost:27017/")
+    my_db1 = my_client1["stock_twse"]
+    my_col1 = my_db1["unlisted_stocks"]
+    data = my_col1.find_one({})
+    return data["stocks"]
 
 # get_listed_stocks_info()
 # print(full_listed_list)

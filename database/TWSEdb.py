@@ -10,17 +10,16 @@ stock_base_template = {
   "start_date": "",
   "industry": "",
   "decimal_no": 2,
+  "last_update": "",
   "prices": {}
 }
 
 price_data_template = {
       "date": "20210905",
-
       "high_p": 220.00,
       "low_p": 220.00,
       "start_p": 220.00,
       "end_p": 220.00,
-
       "trend": "UP, DOWN, EVEN",
       "type": "",
       "solid_range": 10.00,
@@ -51,7 +50,7 @@ class TWSEdb:
             update_data["_id"] = int(stock_id)
             update_data["number"] = stock_id
             if name is not None:
-                update_data["str"] = name
+                update_data["name"] = name
 
             if country is not None:
                 update_data["country"] = country
@@ -99,7 +98,7 @@ class TWSEdb:
     def update_price(self, date: int = None, high_p: int = None, low_p: int = None, start_p: int = None, end_p: int = None , amount: int = None):
         pass
 
-    def add_price_data(self, stock_id: int, date: int, high_p: int, low_p: int, start_p: int, end_p: int, amount: int):
+    def add_price_data(self, stock_id: int, date: str, high_p: float, low_p: float, start_p: float, end_p: float, amount: int):
         new_data = price_data_template
         new_data["date"] = date
         new_data["high_p"] = high_p
@@ -129,7 +128,19 @@ class TWSEdb:
         update_key = f'prices.{date}'
 
         try:
-            self.my_col.update_one({"_id": stock_id}, {"$set": {update_key: new_data}})
+            stock_data = self.my_col.find_one({"_id": stock_id})
+            prices = stock_data["prices"]
+
+            if date not in prices:
+                self.my_col.update_one({"_id": stock_id}, {"$set": {update_key: new_data}})
+
+            last_update = stock_data["last_update"]
+            if last_update != "":
+                last_update_int = int(last_update)
+                if last_update < int(date):
+                    self.my_col.update_one({"_id": stock_id}, {"$set": {"last_update": date}})
+
+            print(f'Success to add stock price data at id = "{stock_id}", date = "{date}"')
         except Exception as e:
             print(f'Fail to add stock price data at id = "{stock_id}", date = "{date}"')
             print(e)
