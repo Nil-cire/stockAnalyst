@@ -1,0 +1,28 @@
+{
+  "_id": 2603,
+  "name": "",
+  "number": "",
+  "country": "TWSE",
+  "listed": true,
+  "currency": "NTD",
+  "decimal place": 2,
+
+  "prices": {
+    "20210905": {
+      "date": "20210905",
+
+      "high_p": 220.00,
+      "low_p": 220.00,
+      "start_p": 220.00,
+      "end_p": 220.00,
+
+      "trend": "UP, DOWN, EVEN",
+      "type": "",
+      "solid_range": 10.00,
+      "dotted_range": 10.00,
+      "amount": 2222220.00
+    }
+  }
+
+
+}
