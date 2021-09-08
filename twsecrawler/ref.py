@@ -75,6 +75,7 @@ def get_listed_dict() -> dict:
     my_db1 = my_client1["stock_twse"]
     my_col1 = my_db1["listed_stocks"]
     data = my_col1.find_one({})
+
     return data["stocks"]
 
 

@@ -133,14 +133,14 @@ class TWSEdb:
 
             if date not in prices:
                 self.my_col.update_one({"_id": stock_id}, {"$set": {update_key: new_data}})
+                print(f'Success to add stock price data at id = "{stock_id}", date = "{date}"')
 
             last_update = stock_data["last_update"]
             if last_update != "":
                 last_update_int = int(last_update)
-                if last_update < int(date):
+                if last_update_int < int(date):
                     self.my_col.update_one({"_id": stock_id}, {"$set": {"last_update": date}})
 
-            print(f'Success to add stock price data at id = "{stock_id}", date = "{date}"')
         except Exception as e:
             print(f'Fail to add stock price data at id = "{stock_id}", date = "{date}"')
             print(e)
