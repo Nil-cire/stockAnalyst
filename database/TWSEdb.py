@@ -120,8 +120,8 @@ class TWSEdb:
 
         new_data["trend"] = trend
 
-        solid_range = abs(end_p - start_p)
-        dotted_range = abs(high_p - low_p)
+        solid_range = round(abs(end_p - start_p), 2)
+        dotted_range = round(abs(high_p - low_p), 2)
         new_data["solid_range"] = solid_range
         new_data["dotted_range"] = dotted_range
 
@@ -145,3 +145,56 @@ class TWSEdb:
             print(f'Fail to add stock price data at id = "{stock_id}", date = "{date}"')
             print(e)
 
+    def update_price_data(self, stock_id: int, date: str, high_p: float, low_p: float, start_p: float, end_p: float, amount: int):
+        new_data = price_data_template
+        new_data["date"] = date
+        new_data["high_p"] = high_p
+        new_data["low_p"] = low_p
+        new_data["start_p"] = start_p
+        new_data["end_p"] = end_p
+        new_data["amount"] = amount
+
+        trend = ""
+
+        if (end_p - start_p) > 0:
+            trend = "UP"
+
+        if (end_p - start_p) < 0:
+            trend = "DOWN"
+
+        if (end_p - start_p) == 0:
+            trend = "EVEN"
+
+        new_data["trend"] = trend
+
+        solid_range = round(abs(end_p - start_p), 2)
+        dotted_range = round(abs(high_p - low_p), 2)
+        new_data["solid_range"] = solid_range
+        new_data["dotted_range"] = dotted_range
+
+        update_key = f'prices.{date}'
+
+        try:
+            stock_data = self.my_col.find_one({"_id": stock_id})
+            # prices = stock_data["prices"]
+
+            self.my_col.update_one({"_id": stock_id}, {"$set": {update_key: new_data}})
+            print(f'Success to add stock price data at id = "{stock_id}", date = "{date}"')
+
+            last_update = stock_data["last_update"]
+            if last_update != "":
+                last_update_int = int(last_update)
+                if last_update_int < int(date):
+                    self.my_col.update_one({"_id": stock_id}, {"$set": {"last_update": date}})
+
+        except Exception as e:
+            print(f'Fail to add stock price data at id = "{stock_id}", date = "{date}"')
+            print(e)
+
+    def is_id_exist(self, data_id: str) -> bool:
+        d_id = int(data_id)
+        stock_data = self.my_col.find_one(d_id)
+        if stock_data is None:
+            return False
+        else:
+            return True
