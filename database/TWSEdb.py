@@ -198,3 +198,6 @@ class TWSEdb:
             return False
         else:
             return True
+
+    def find_single_stock(self, stock_no: str) -> dict:
+        return self.my_col.find_one({"_id": int(stock_no)})

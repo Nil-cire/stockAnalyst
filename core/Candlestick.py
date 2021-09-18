@@ -2,27 +2,29 @@ class Candlestick:
 
     date: int = None  # example: 20210904
 
-    high_p: int = None
-    low_p: int = None
-    start_p: int = None
-    end_p: int = None
+    high_p: float = None
+    low_p: float = None
+    start_p: float = None
+    end_p: float = None
     trend: str = None  # UP, DOWN , EVEN
 
-    solid_range: int = None
-    dotted_range: int = None
+    solid_range: float = None
+    dotted_range: float = None
 
     amount: int = None
 
     def __init__(self):
         pass
 
-    def set_price_amount(self, date, high_p, low_p, start_p, end_p, amount=None):
-        self.date = int(date)
-        self.high_p = int(high_p)
-        self.low_p = int(low_p)
-        self.start_p = int(start_p)
-        self.end_p = int(end_p)
+    def set_price_amount(self, date, high_p, low_p, start_p, end_p, amount=None, trend: str = None):
+        self.date = date
+        self.high_p = high_p
+        self.low_p = low_p
+        self.start_p = start_p
+        self.end_p = end_p
         self.amount = amount
+        self.trend = trend
+        return self
 
     def is_data_verified(self):
         if self.date is None:
