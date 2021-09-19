@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup as bs
 import pymongo
+from database import DbMapper, TWSEdb
 
 listed_stock_number_url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=2"
 unlisted_stock_number_url = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=4"
-
 
 
 # b_data.find_all("td")
@@ -113,4 +113,10 @@ def get_unlisted_dict() -> dict:
 #   </td>
 #  </tr>
 #  <tr>
+
+def get_2021_dates():
+    db: TWSEdb = DbMapper.db_mapper("2021")
+    stock_info: dict = db.find_single_stock("2603")
+    price_info = stock_info["prices"]
+    return list(dict(sorted(price_info.items())))
 
