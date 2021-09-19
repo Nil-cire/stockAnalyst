@@ -35,7 +35,9 @@ obv_template = {
 
 rsi_template = {
     "rsi5": 0.0,
-    "rsi10": 0.0
+    "rsi10": 0.0,
+    "rsi14": 0.0,
+    "rsi20": 0.0
 }
 
 
@@ -83,14 +85,14 @@ def initialize_ma(date: str, country: str = "TWSE"):
         for d in range(day_index - (day_interval - 1), (day_index + 1)):
             cd_yesterday: Candlestick = ordered_sticks[key_list[(d-1)]]
             cd: Candlestick = ordered_sticks[key_list[d]]
-            trend = cd.trend
             price_today = cd.end_p
             price_yesterday = cd_yesterday.end_p
+            delta = price_today - price_yesterday
 
-            if trend == "UP":
-                total_up += (price_today - price_yesterday)
-            if trend == "DOWN":
-                total_down += (price_yesterday - price_today)
+            if delta > 0:
+                total_up += delta
+            if delta < 0:
+                total_down += (- delta)
 
         return 100 * (total_up / (total_up + total_down))
 
@@ -107,16 +109,19 @@ def initialize_ma(date: str, country: str = "TWSE"):
         stick_count = len(ordered_sticks)
         key_list = list(ordered_sticks)
 
+        obv = 0
+
         # update every_day for a stock
         for i in range(0, stick_count):
 
             key_date = key_list[i]
 
             ma_list = {}
-            obv = 0
             sd20 = 0.0
             rsi_5 = 0.00
             rsi_10 = 0.00
+            rsi_14 = 0.00
+            rsi_20 = 0.00
 
             try:
                 # ma: many of them
@@ -147,6 +152,10 @@ def initialize_ma(date: str, country: str = "TWSE"):
                     rsi_5 = round(cal_rsi(5, i), 2)
                 if i >= 10:
                     rsi_10 = round(cal_rsi(10, i), 2)
+                if i >= 14:
+                    rsi_14 = round(cal_rsi(14, i), 2)
+                if i >= 20:
+                    rsi_20 = round(cal_rsi(20, i), 2)
 
                 # fill templates
                 new_ma_temp = ma_template
@@ -172,6 +181,8 @@ def initialize_ma(date: str, country: str = "TWSE"):
                 new_rsi_temp = rsi_template
                 new_rsi_temp["rsi5"] = rsi_5
                 new_rsi_temp["rsi10"] = rsi_10
+                new_rsi_temp["rsi14"] = rsi_14
+                new_rsi_temp["rsi20"] = rsi_20
 
                 # do updates
                 # ma
@@ -203,16 +214,19 @@ def initialize_ma(date: str, country: str = "TWSE"):
         stick_count = len(ordered_sticks)
         key_list = list(ordered_sticks)
 
+        obv = 0
+
         # update every_day for a stock
         for i in range(0, stick_count):
 
             key_date = key_list[i]
 
             ma_list = {}
-            obv = 0
             sd20 = 0.0
             rsi_5 = 0.00
             rsi_10 = 0.00
+            rsi_14 = 0.00
+            rsi_20 = 0.00
 
             try:
                 # ma: many of them
@@ -243,6 +257,10 @@ def initialize_ma(date: str, country: str = "TWSE"):
                     rsi_5 = round(cal_rsi(5, i), 2)
                 if i >= 10:
                     rsi_10 = round(cal_rsi(10, i), 2)
+                if i >= 14:
+                    rsi_14 = round(cal_rsi(14, i), 2)
+                if i >= 20:
+                    rsi_20 = round(cal_rsi(20, i), 2)
 
                 # fill templates
                 new_ma_temp = ma_template
@@ -268,6 +286,8 @@ def initialize_ma(date: str, country: str = "TWSE"):
                 new_rsi_temp = rsi_template
                 new_rsi_temp["rsi5"] = rsi_5
                 new_rsi_temp["rsi10"] = rsi_10
+                new_rsi_temp["rsi14"] = rsi_14
+                new_rsi_temp["rsi20"] = rsi_20
 
                 # do updates
                 # ma

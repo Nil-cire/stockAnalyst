@@ -35,7 +35,39 @@ def get_candlesticks(stock_no: str, start_day: str, end_day: str, db: TWSEdb = N
                 amount = c_info["amount"]
                 trend = c_info["trend"]
 
-                cd = Candlestick().set_price_amount(date, high_p, low_p, start_p, end_p, amount, trend)
+                index = c_info["index"]
+
+                ma = index["ma"]
+                ma5 = ma["ma5"]
+                ma10 = ma["ma10"]
+                ma14 = ma["ma14"]
+                ma20 = ma["ma20"]
+                ma21 = ma["ma21"]
+                ma60 = ma["ma60"]
+                ma120 = ma["ma120"]
+                ma150 = ma["ma150"]
+                ma240 = ma["ma240"]
+
+                boll = index["boll"]
+                boll_high = boll["boll_high"]
+                boll_mid = boll["boll_mid"]
+                boll_low = boll["boll_low"]
+
+                obv_index = index["obv"]
+                obv = obv_index["obv"]
+
+                rsi = index["rsi"]
+                rsi5 = rsi["rsi5"]
+                rsi10 = rsi["rsi10"]
+                rsi14 = rsi["rsi14"]
+                rsi20 = rsi["rsi20"]
+
+                cd: Candlestick = Candlestick()\
+                    .set_price_amount(date, high_p, low_p, start_p, end_p, amount, trend)\
+                    .set_ma(ma5, ma10, ma14, ma20, ma21, ma60, ma120, ma150, ma240)\
+                    .set_bollinger(boll_high, boll_mid, boll_low)\
+                    .set_obv(obv)\
+                    .set_rsi(rsi5, rsi10, rsi14, rsi20)
 
                 candlesticks[str(date)] = cd
 

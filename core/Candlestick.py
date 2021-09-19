@@ -13,6 +13,27 @@ class Candlestick:
 
     amount: int = None
 
+    ma5 = None
+    ma10 = None
+    ma14 = None
+    ma20 = None
+    ma21 = None
+    ma60 = None
+    ma120 = None
+    ma150 = None
+    ma240 = None
+
+    boll_high = None
+    boll_mid = None
+    boll_low = None
+
+    obv = None
+
+    rsi5 = None
+    rsi10 = None
+    rsi14 = None
+    rsi20 = None
+
     def __init__(self):
         pass
 
@@ -24,6 +45,35 @@ class Candlestick:
         self.end_p = end_p
         self.amount = amount
         self.trend = trend
+        return self
+
+    def set_ma(self, ma5, ma10, ma14, ma20, ma21, ma60, ma120, ma150, ma240):
+        self.ma5 = ma5
+        self.ma10 = ma10
+        self.ma14 = ma14
+        self.ma20 = ma20
+        self.ma21 = ma21
+        self.ma60 = ma60
+        self.ma120 = ma120
+        self.ma150 = ma150
+        self.ma240 = ma240
+        return self
+
+    def set_bollinger(self, boll_high, boll_mid, boll_low):
+        self.boll_high = boll_high
+        self.boll_mid = boll_mid
+        self.boll_low = boll_low
+        return self
+
+    def set_obv(self, obv):
+        self.obv = obv
+        return self
+
+    def set_rsi(self, rsi5, rsi10, rsi14, rsi20):
+        self.rsi5 = rsi5
+        self.rsi10 = rsi10
+        self.rsi14 = rsi14
+        self.rsi20 = rsi20
         return self
 
     def is_data_verified(self):
