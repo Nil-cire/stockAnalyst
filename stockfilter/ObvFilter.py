@@ -4,7 +4,7 @@ from twsecrawler import ref
 from core import Candlestick
 
 
-def is_obv_deviate(sticks, interval: int, date: str) -> bool:
+def is_obv_deviate(sticks, interval: int, date: str, filter_vol: int = 0, filter_p: int = 0) -> bool:
     keys = list(sticks)
 
     try:
@@ -21,6 +21,11 @@ def is_obv_deviate(sticks, interval: int, date: str) -> bool:
 
     for i in range((index - interval), index):  # past candles
         cd: Candlestick = sticks[keys[i]]
+
+        if cd.amount < filter_vol:
+            break
+        if cd.end_p < filter_p:
+            break
 
         if max_price is None:
             max_price = cd.end_p

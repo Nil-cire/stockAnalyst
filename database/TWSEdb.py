@@ -201,3 +201,7 @@ class TWSEdb:
 
     def find_single_stock(self, stock_no: str) -> dict:
         return self.my_col.find_one({"_id": int(stock_no)})
+
+    def update_index(self, stock_no: str, date: str, data: dict):
+        update_key = f'prices.{date}.index'
+        self.my_col.update_one({"_id": int(stock_no)}, {"$set": {update_key: data}})

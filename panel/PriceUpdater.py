@@ -8,40 +8,60 @@ import time
 
 update_interval = 7
 
+date_list = ["20210101", "20210201", "20210301", "20210401", "20210501", "20210601", "20210701", "20210801", "20210901"]
+
+
+def update_all():
+    for date in date_list:
+        update_all_listed_stock_price_by_month(date)
+        update_all_unlisted_stock_price_by_month(date)
+
 
 def add_new_listed_stock_to_db():
     listed_dict = ref.get_listed_stocks_info()
-
+    count = 0
+    total = 0
     db = TWSEdb("stock_twse", "basePrice")
 
     for (key, value) in listed_dict.items():
         if len(key) < 5:
+            total += 1
             try:
                 db.add_stock_info(key, value[1], "TWSE", value[3], value[2], value[4], "NTD", 2)
+                count += 1
             except Exception as e:
                 print(e)
+
+    print(f'Done add {count} stocks / total = {total}')
+    db.my_client.close()
 
 
 def add_new_unlisted_stock_to_db():
     listed_dict = ref.get_unlisted_stocks_info()
     count = 0
+    total = 0
     db = TWSEdb("stock_twse", "basePrice")
 
     for (key, value) in listed_dict.items():
         if len(key) < 5:
+            total += 1
             try:
-                count += 1
                 db.add_stock_info(key, value[1], "TWSE", value[3], value[2], value[4], "NTD", 2)
+                count += 1
             except Exception as e:
                 print(e)
 
-    print(f'Done add {count} stocks')
+    print(f'Done add {count} stocks / total = {total}')
+    db.my_client.close()
 
 
 def update_single_stock_price_by_month(stock_no: str, date: str, db: TWSEdb = None, add_or_update: str = "update"):
     count = 0
+    total = 0
     if TWSEdb is None:
         db = TWSEdb("stock_twse", "basePrice")
+    else:
+        db = db
     res = StockBaseCrawler.craw_data_from_twse(stock_no, date)
     if res != "":
         b_data = bs(res, "html.parser")
@@ -49,31 +69,35 @@ def update_single_stock_price_by_month(stock_no: str, date: str, db: TWSEdb = No
         data = big_data.find_all("tr")
 
         for d in data:
+            total += 1
             try:
-                count += 1
                 detail = d.find_all("td")
                 format_string = detail[0].text.replace("/", "")
                 new_date = str(int(format_string[0: 3]) + 1911) + format_string[3:7]
-                high_p = detail[4].text
-                low_p = detail[5].text
-                start_p = detail[3].text
-                end_p = detail[6].text
+                high_p = detail[4].text.replace(",", "")
+                low_p = detail[5].text.replace(",", "")
+                start_p = detail[3].text.replace(",", "")
+                end_p = detail[6].text.replace(",", "")
                 amount = detail[1].text.replace(",", "")
 
                 if add_or_update == "add":
                     db.add_price_data(int(stock_no), new_date, float(high_p), float(low_p), float(start_p), float(end_p), int(amount))
                 if add_or_update == "update":
                     db.update_price_data(int(stock_no), new_date, float(high_p), float(low_p), float(start_p), float(end_p), int(amount))
+                count += 1
             except Exception as e:
                     print(e)
 
-    print(f'Done update {count} stocks')
+    print(f'Done add {count} stocks / total = {total}')
 
 
 def update_single_unlisted_stock_price_by_month(stock_no: str, date: str, db: TWSEdb = None, add_or_update: str = "update"):
     count = 0
+    total = 0
     if TWSEdb is None:
         db = TWSEdb("stock_twse", "basePrice")
+    else:
+        db = db
     res = StockBaseCrawler.craw_data_from_tpex(stock_no, date)
     if res != "":
         b_data = bs(res, "html.parser")
@@ -81,25 +105,26 @@ def update_single_unlisted_stock_price_by_month(stock_no: str, date: str, db: TW
         data = big_data.find_all("tr")
 
         for d in data:
+            total += 1
             try:
-                count += 1
                 detail = d.find_all("td")
                 format_string = detail[0].text.replace("/", "")
                 new_date = str(int(format_string[0: 3]) + 1911) + format_string[3:7]
-                high_p = detail[4].text
-                low_p = detail[5].text
-                start_p = detail[3].text
-                end_p = detail[6].text
+                high_p = detail[4].text.replace(",", "")
+                low_p = detail[5].text.replace(",", "")
+                start_p = detail[3].text.replace(",", "")
+                end_p = detail[6].text.replace(",", "")
                 amount = int(detail[1].text.replace(",", "")) * 1000
 
                 if add_or_update == "add":
                     db.add_price_data(int(stock_no), new_date, float(high_p), float(low_p), float(start_p), float(end_p), int(amount))
                 if add_or_update == "update":
                     db.update_price_data(int(stock_no), new_date, float(high_p), float(low_p), float(start_p), float(end_p), int(amount))
+                count += 1
             except Exception as e:
                 print(e)
 
-    print(f'Done update {count} stocks')
+    print(f'Done add {count} stocks / total = {total}')
 
 
 # main function
@@ -136,34 +161,59 @@ def update_all_unlisted_stock_price_by_month(date: str):
 
 # main function
 def add_all_new_listed_stock_price_by_month(date: str):
+    fail_list = []
     listed_dict = ref.get_listed_dict()
+    count = 0
+    total = 0
 
     db = TWSEdb("stock_twse", "basePrice")
 
     # update_single_stock_price_by_month("2603", str(date), db)
     for key in listed_dict:
         if len(key) < 5:
+            total += 1
             try:
                 time.sleep(update_interval)
                 update_single_stock_price_by_month(str(key), date, db, "add")
+                count += 1
             except Exception as e:
+                faillist.append(key)
                 print(e)
+
+    print(f'Done add {count} stocks / total = {total}')
+    if len(fail_list) != 0:
+        print(f'fail update on stocks = {fail_list}')
+
+    db.my_client.close()
 
 
 # main function
 def add_all_new_unlisted_stock_price_by_month(date: str):
+    fail_list = []
     unlisted_dict = ref.get_unlisted_dict()
+    count = 0
+    total = 0
 
     db = TWSEdb("stock_twse", "basePrice")
 
     # update_single_stock_price_by_month("2603", str(date), db)
     for key in unlisted_dict:
         if len(key) < 5:
+            total += 1
             try:
                 time.sleep(update_interval)
-                update_single_stock_price_by_month(str(key), date, db, "add")
+                update_single_unlisted_stock_price_by_month(str(key), date, db, "add")
+                count += 1
             except Exception as e:
+                faillist.append(key)
                 print(e)
+
+    print(f'Done add {count} stocks / total = {total}')
+    if len(fail_list) != 0:
+        print(f'fail update on stocks = {fail_list}')
+
+    db.my_client.close()
+
 
 
 daily_stock_url = "https://histock.tw/stock/rank.aspx?m=0&d=0&p=all"
@@ -222,6 +272,8 @@ def twse_daily_price_update(date: str):
             print(e)
 
     print(f'Success update {count} items / Total {c_total}')
+
+
 
 
 # listed
