@@ -102,10 +102,10 @@ class Candlestick:
             print("Data: amount, not set")
             return False
 
-    def form_candle_type(self) -> bool:
-        if not self.is_data_verified():
-            print("Price or amount not verified")
-            return False
+    def set_candle_type(self):
+        # if not self.is_data_verified():
+        #     print("Price or amount not verified")
+        #     return False
 
         if (self.end_p - self.start_p) > 0:
             self.trend = "UP"
@@ -116,9 +116,9 @@ class Candlestick:
         if (self.end_p - self.start_p) == 0:
             self.trend = "EVEN"
 
-        self.solid_range = abs(self.end_p - self.start_p)
-        self.dotted_range = abs(self.high_p - self.low_p)
+        self.solid_range = round(abs(self.end_p - self.start_p), 2)
+        self.dotted_range = round(abs(self.high_p - self.low_p), 2)
 
-        return True
+        return self
 
 

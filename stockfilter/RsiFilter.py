@@ -4,7 +4,7 @@ from twsecrawler import ref
 from core import Candlestick
 
 
-def is_rsi_deviate(sticks, interval: int, date: str) -> bool:
+def is_rsi14_deviate(sticks, interval: int, date: str, filter_vol: int = 0, filter_p: int = 0) -> bool:
     keys = list(sticks)
 
     try:
@@ -21,6 +21,11 @@ def is_rsi_deviate(sticks, interval: int, date: str) -> bool:
 
     for i in range((index - interval), index):  # past candles
         cd: Candlestick = sticks[keys[i]]
+
+        if cd.amount < filter_vol:
+            break
+        if cd.end_p < filter_p:
+            break
 
         if max_price is None:
             max_price = cd.end_p
@@ -45,6 +50,61 @@ def is_rsi_deviate(sticks, interval: int, date: str) -> bool:
 
     cur_p = sticks[date].end_p
     cur_rsi = sticks[date].rsi14
+
+    if check_obv_deviate_high(max_price, max_rsi, cur_p, cur_rsi) or check_obv_deviate_low(min_price, min_rsi, cur_p, cur_rsi):
+        print("Deviate")
+        return True
+    else:
+        print("Not deviate")
+        return False
+
+
+def is_rsi5_deviate(sticks, interval: int, date: str, filter_vol: int = 0, filter_p: int = 0) -> bool:
+    keys = list(sticks)
+
+    try:
+        index = keys.index(date)
+    except Exception as e:
+        print("No such date, try again")
+        print(e)
+        return False
+
+    max_price = None
+    max_rsi = None
+    min_price = None
+    min_rsi = None
+
+    for i in range((index - interval), index):  # past candles
+        cd: Candlestick = sticks[keys[i]]
+
+        if cd.amount < filter_vol:
+            break
+        if cd.end_p < filter_p:
+            break
+
+        if max_price is None:
+            max_price = cd.end_p
+        if min_price is None:
+            min_price = cd.end_p
+        if max_rsi is None:
+            max_rsi = cd.rsi5
+        if min_rsi is None:
+            min_rsi = cd.rsi5
+
+        # if cd.end_p > max_price:
+        #     max_price = cd.end_p
+        if cd.rsi5 > max_rsi:
+            max_rsi = cd.rsi5
+            max_price = cd.end_p
+
+        # if cd.end_p < min_price:
+        #     min_price = cd.end_p
+        if cd.rsi5 < min_rsi:
+            min_rsi = cd.rsi5
+            min_price = cd.end_p
+
+    cur_p = sticks[date].end_p
+    cur_rsi = sticks[date].rsi5
 
     if check_obv_deviate_high(max_price, max_rsi, cur_p, cur_rsi) or check_obv_deviate_low(min_price, min_rsi, cur_p, cur_rsi):
         print("Deviate")
