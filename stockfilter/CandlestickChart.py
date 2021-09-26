@@ -191,3 +191,73 @@ def is_bear_flag(cds: Dict[str, Candlestick]) -> bool:
         return False
 
     return True
+
+
+def is_three_star_south(cds: Dict[str, Candlestick]):
+    if len(cds) < 3:
+        print("error on is_three_star_south, size of cds < 3")
+        return False
+
+    if len(cds) != 3:
+        cd3 = chop_last(cds, 3)
+        keys = list(cd3)
+        c0 = cds[keys[0]]
+        c1 = cds[keys[1]]
+        c2 = cds[keys[2]]
+    else:
+        keys = list(cds)
+        c0 = cds[keys[0]]
+        c1 = cds[keys[1]]
+        c2 = cds[keys[2]]
+
+    if c0.trend != "DOWN":
+        return False
+    if c1.trend != "DOWN":
+        return False
+    if c2.trend != "DOWN":
+        return False
+
+    # cd size
+    if c0.solid_range < c1.solid_range or c1.solid_range < c2.solid_range:
+        return False
+
+    # price compare
+    if c0.end_p < c1.end_p or c1.end_p < c2.end_p:
+        return False
+
+    return True
+
+
+def is_advanced_block(cds: Dict[str, Candlestick]):
+    if len(cds) < 3:
+        print("error on is_three_star_south, size of cds < 3")
+        return False
+
+    if len(cds) != 3:
+        cd3 = chop_last(cds, 3)
+        keys = list(cd3)
+        c0 = cds[keys[0]]
+        c1 = cds[keys[1]]
+        c2 = cds[keys[2]]
+    else:
+        keys = list(cds)
+        c0 = cds[keys[0]]
+        c1 = cds[keys[1]]
+        c2 = cds[keys[2]]
+
+    if c0.trend != "UP":
+        return False
+    if c1.trend != "UP":
+        return False
+    if c2.trend != "UP":
+        return False
+
+    # cd size
+    if c0.solid_range < c1.solid_range or c1.solid_range < c2.solid_range:
+        return False
+
+    # price compare
+    if c0.end_p > c1.end_p or c1.end_p > c2.end_p:
+        return False
+
+    return True

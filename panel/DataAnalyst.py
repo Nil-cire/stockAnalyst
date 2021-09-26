@@ -504,3 +504,51 @@ def filter_is_bear_flag(check_date: str) -> list:
             print(f'!!! Fail to check is_bull_flag, cause = {e}')
 
     return bear_f_list
+
+
+def filter_is_three_star_south(check_date: str) -> list:
+    li = []
+
+    start_day = check_date[0: 4] + "0101"
+
+    for stock_no in listed_stocks.keys():
+        try:
+            cds = Basic.get_candlesticks(stock_no, start_day, check_date)
+            if CandlestickChart.is_three_star_south(cds):
+                li.append(str(stock_no))
+        except Exception as e:
+            print(f'!!! Fail to check is_three_star_south, cause = {e}')
+
+    for stock_no in unlisted_stocks.keys():
+        try:
+            cds = Basic.get_candlesticks(stock_no, start_day, check_date)
+            if CandlestickChart.is_three_star_south(cds):
+                li.append(str(stock_no))
+        except Exception as e:
+            print(f'!!! Fail to check is_three_star_south, cause = {e}')
+
+    return li
+
+
+def filter_is_advanced_block(check_date: str) -> list:
+    li = []
+
+    start_day = check_date[0: 4] + "0101"
+
+    for stock_no in listed_stocks.keys():
+        try:
+            cds = Basic.get_candlesticks(stock_no, start_day, check_date)
+            if CandlestickChart.is_advanced_block(cds):
+                li.append(str(stock_no))
+        except Exception as e:
+            print(f'!!! Fail to check is_three_star_south, cause = {e}')
+
+    for stock_no in unlisted_stocks.keys():
+        try:
+            cds = Basic.get_candlesticks(stock_no, start_day, check_date)
+            if CandlestickChart.is_advanced_block(cds):
+                li.append(str(stock_no))
+        except Exception as e:
+            print(f'!!! Fail to check is_three_star_south, cause = {e}')
+
+    return li
